@@ -5,11 +5,22 @@
 */
 
 // the setup function runs once when you press reset or power the board
+#include "Potentiometer.h"
 #include "IMode.h"
 #include "Color.h"
 #include "LedStrip.h"
+//Config
+Color bestColors[] = { Color(255, 0, 0), Color(0, 255, 0), Color(0,0,255) };
+int delayTime = 500;
+
 
 LedStrip ledStrip1;
+int colorIndex = 0;
+
+Potentiometer redPot = Potentiometer(0);
+Potentiometer greenPot = Potentiometer(1);
+Potentiometer bluePot = Potentiometer(2);
+
 
 void setup() {
 	ledStrip1 = LedStrip(9, 10, 11, 255, 130, 140);
@@ -18,5 +29,16 @@ void setup() {
 
 // the loop function runs over and over again until power down or reset
 void loop() {
+	ledStrip1.changeColor(Color(redPot.read(), greenPot.read(), bluePot.read()));
 	ledStrip1.write();
+	//next();
+}
+
+void next() {
+	ledStrip1.changeColor(bestColors[colorIndex]);
+	colorIndex++;
+	if (colorIndex >= 2) {
+		colorIndex = 0;
+	}
+	delay(delayTime);
 }
