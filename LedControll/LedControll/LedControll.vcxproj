@@ -83,14 +83,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
-    <ClInclude Include="IMode.h" />
     <ClInclude Include="LedStrip.h" />
     <ClInclude Include="Potentiometer.h" />
     <ClInclude Include="__vm\.LedControll.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Color.cpp" />
-    <ClCompile Include="IMode.cpp" />
     <ClCompile Include="LedStrip.cpp" />
     <ClCompile Include="Potentiometer.cpp" />
   </ItemGroup>

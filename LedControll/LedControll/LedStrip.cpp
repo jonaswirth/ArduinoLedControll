@@ -28,15 +28,11 @@ void LedStrip::changeColor(Color newColor)
 	color = newColor;
 }
 
-void LedStrip::write()
+void LedStrip::shine()
 {
-	writeColor(color);
-}
-
-void LedStrip::writeColor(Color clr) {
-	analogWrite(redPin, map(clr.get_red(), 0, 255, 0, maxRed));
-	analogWrite(greenPin, map(clr.get_green(), 0, 255, 0, maxGreen));
-	analogWrite(bluePin, map(clr.get_blue(), 0, 255, 0, maxBlue));
+	analogWrite(redPin, map(color.get_red(), 0, 255, 0, maxRed));
+	analogWrite(greenPin, map(color.get_green(), 0, 255, 0, maxGreen));
+	analogWrite(bluePin, map(color.get_blue(), 0, 255, 0, maxBlue));
 }
 
 

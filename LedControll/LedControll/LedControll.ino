@@ -6,7 +6,6 @@
 
 // the setup function runs once when you press reset or power the board
 #include "Potentiometer.h"
-#include "IMode.h"
 #include "Color.h"
 #include "LedStrip.h"
 //Config
@@ -30,7 +29,7 @@ void setup() {
 // the loop function runs over and over again until power down or reset
 void loop() {
 	ledStrip1.changeColor(Color(redPot.read(), greenPot.read(), bluePot.read()));
-	ledStrip1.write();
+	ledStrip1.shine();
 	//next();
 }
 

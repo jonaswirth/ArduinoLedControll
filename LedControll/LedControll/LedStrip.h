@@ -18,12 +18,11 @@ private:
 	int maxGreen;
 	int maxBlue;
 	Color color;
-	void writeColor(Color color);
 public:
 	LedStrip();
 	LedStrip(int r, int g, int b, int maxR, int maxG, int maxB);
 	void changeColor(Color newColor);
-	void write();
+	void shine();
 };
 
 #endif
