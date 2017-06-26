@@ -10,6 +10,7 @@ ESP8266WebServer
 - 3 x Transistors
 - 3 x 1 kohm resistors
 - 1 x RGB Ledstrip
+- 1 x 12 V Power supply (0.4 - 1 amps per meter)
 
 **Circuit** <br/>
 *Coming soon*
