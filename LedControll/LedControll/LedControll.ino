@@ -1,14 +1,14 @@
 /*
  Name:		LedControll.ino
  Created:	6/12/2017 3:46:57 PM
- Author:	Jonas
+ Author:	Jonas Wirth
 */
 
-// the setup function runs once when you press reset or power the board
+
 #include <ESP8266WebServer.h>
+#include <ESP8266WiFi.h>
 #include "Color.h"
 #include "LedStrip.h"
-#include <ESP8266WiFi.h>
 
 //Config
 Color bestColors[] = { Color(255, 0, 0), Color(0, 255, 0), Color(0,0,255) };
@@ -23,7 +23,7 @@ const char* ssid = "";
 const char* pw = "";
 ESP8266WebServer server(80);
 
-
+// the setup function runs once when you press reset or power the board
 void setup() {
 	ledStrip1 = LedStrip(D6, D7, D8, 255, 130, 140);
 	ledStrip1.changeColor(Color(255, 0, 0));
@@ -35,7 +35,20 @@ void setup() {
 
 	//Register routes
 	server.on("/changecolor", []() {
+		server.send(200, "text/plain", "color changed");
 		changeColor(getArgValue("address"), getArgValue("r"), getArgValue("g"), getArgValue("b"));
+	});
+
+	server.on("/setmode", []() {
+		//Set the current mode of a strip, not implemented
+	});
+
+	server.on("setstate", []() {
+		//Turn a strip on or off, not implmeted
+	});
+
+	server.onNotFound([] {
+		server.send(404, "text/plain", "The requested action could not be found!");
 	});
 
 	server.begin();
