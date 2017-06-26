@@ -5,10 +5,11 @@
 */
 
 // the setup function runs once when you press reset or power the board
+#include <ESP8266WebServer.h>
 #include "Color.h"
 #include "LedStrip.h"
 #include <ESP8266WiFi.h>
-#include <ArduinoHttpServer.h>
+
 //Config
 Color bestColors[] = { Color(255, 0, 0), Color(0, 255, 0), Color(0,0,255) };
 int delayTime = 500;
@@ -20,7 +21,7 @@ int colorIndex = 0;
 //Network
 const char* ssid = "";
 const char* pw = "";
-WiFiServer wifiServer(80);
+ESP8266WebServer server(80);
 
 
 void setup() {
@@ -31,48 +32,27 @@ void setup() {
 	{
 		delay(500);
 	}
-	wifiServer.begin();
+
+	//Register routes
+	server.on("/changecolor", []() {
+		changeColor(getArgValue("address"), getArgValue("r"), getArgValue("g"), getArgValue("b"));
+	});
+
+	server.begin();
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-	WiFiClient client(wifiServer.available());
-	if (client.connected())
-	{
-		// Connected successfully to client. Initialize StreamHttpRequest object.
-		ArduinoHttpServer::StreamHttpRequest<1023> httpRequest(client);
-
-		// Parse the request.
-		if (httpRequest.readRequest())
-		{
-			// Parsing the request. A request url contains action/address/value
-			String action = httpRequest.getResource()[0];
-			String address = httpRequest.getResource()[1];
-			String value = httpRequest.getResource()[2];
-
-			// Retrieve HTTP method.
-			ArduinoHttpServer::MethodEnum method(ArduinoHttpServer::MethodInvalid);
-			method = httpRequest.getMethod();
-
-			if (method == ArduinoHttpServer::MethodGet)
-			{
-				if (action.equals("changecolor")) {
-					changeColor(address, value);
-				}
-				ArduinoHttpServer::StreamHttpReply httpReply(client, httpRequest.getContentType());
-				httpReply.send("OK");
-			}
-
-		}
-		else
-		{
-			// Error handling
-			ArduinoHttpServer::StreamHttpErrorReply httpReply(client, httpRequest.getContentType());
-			httpReply.send(httpRequest.getErrorDescrition());
-		}
-	}
+	server.handleClient();
 	ledStrip1.shine();
-	//next();
+}
+
+int getArgValue(String name)
+{
+	for (uint8_t i = 0; i < server.args(); i++)
+		if (server.argName(i) == name)
+			return server.arg(i).toInt();
+	return -1;
 }
 
 void next() {
@@ -84,17 +64,7 @@ void next() {
 	delay(delayTime);
 }
 
-void changeColor(String address, String color) {
-	String colors[3];
-	char c[12];
-	color.toCharArray(c, 12);
-	int i = 0;
-	char *ch;
-	ch = strtok(c, ";");
-	while (ch != NULL) {
-		colors[i] = ch;
-		ch = strtok(NULL, ";");
-		i++;
-	}
-	ledStrip1.changeColor(Color(colors[0].toInt(), colors[1].toInt(), colors[2].toInt()));
+void changeColor(int address, int red, int green, int blue) {
+	//Currently there is only one led strip so the address is irrelevant
+	ledStrip1.changeColor(Color(red, green, blue));
 }
