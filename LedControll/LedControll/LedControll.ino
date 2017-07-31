@@ -4,15 +4,24 @@
  Author:	Jonas Wirth
 */
 
-
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266HTTPClient.h>
 #include "Color.h"
 #include "LedStrip.h"
 
+
 //Config
+String bridgeAddress = "192.168.178.63:50136";
+int deviceId = 1;
+
 Color bestColors[] = { Color(255, 0, 0), Color(0, 255, 0), Color(0,0,255) };
 int delayTime = 500;
+
+//Modes
+enum Mode {Shine, Blink, Pulse, Fade, FadeAll};
+Mode currentMode;
 
 //Led Strips
 LedStrip ledStrip1;
@@ -22,15 +31,34 @@ int colorIndex = 0;
 const char* ssid = "";
 const char* pw = "";
 ESP8266WebServer server(80);
+ESP8266WiFiMulti wifiMulti;
+
+HTTPClient httpClient;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-	ledStrip1 = LedStrip(D6, D7, D8, 255, 130, 140);
+	pinMode(LED_BUILTIN, OUTPUT);
+	digitalWrite(LED_BUILTIN, LOW);
+	//Setup timer
+	ledStrip1 = LedStrip(D7, D8, D6, 255, 130, 140);
 	ledStrip1.changeColor(Color(255, 0, 0));
-	WiFi.begin(const_cast<char*>(ssid), pw);
-	while (WiFi.status() != WL_CONNECTED)
-	{
-		delay(500);
+
+	//Register to bridge
+	wifiMulti.addAP(ssid, pw);
+	bool ready = false;
+	while (ready != true) {
+		digitalWrite(BUILTIN_LED, HIGH);
+		if ((wifiMulti.run() != true)) {
+			httpClient.begin("http://" + bridgeAddress + "/api/device/register?id=" + deviceId);
+			int responseCode = httpClient.GET();
+			if (responseCode > 0) {
+				ready = true;
+			}
+			httpClient.end();
+		}
+		delay(250);
+		digitalWrite(BUILTIN_LED, LOW);
+		delay(250);
 	}
 
 	//Register routes
@@ -40,11 +68,11 @@ void setup() {
 	});
 
 	server.on("/setmode", []() {
-		//Set the current mode of a strip, not implemented
+		currentMode = (Mode)getArgValue("mode");
 	});
 
-	server.on("setstate", []() {
-		//Turn a strip on or off, not implmeted
+	server.on("/setstate", []() {
+		ledStrip1.changeColor(Color(0, 0, 0));
 	});
 
 	server.onNotFound([] {
