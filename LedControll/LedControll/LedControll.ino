@@ -62,6 +62,10 @@ void setup() {
 	}
 
 	//Register routes
+	server.on("/ready", []() {
+		server.send(200, "text/plain", "device ready");
+	});
+
 	server.on("/changecolor", []() {
 		server.send(200, "text/plain", "color changed");
 		changeColor(getArgValue("address"), getArgValue("r"), getArgValue("g"), getArgValue("b"));
