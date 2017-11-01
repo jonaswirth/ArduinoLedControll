@@ -12,5 +12,3 @@ ESP8266WebServer
 - 1 x RGB Ledstrip
 - 1 x 12 V Power supply (0.4 - 1 amps per meter)
 
-**Circuit** <br/>
-*Coming soon*
